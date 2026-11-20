@@ -1,0 +1,52 @@
+#cloud-config                                                                         
+# =====================================================================               
+#  Exécuté UNE SEULE FOIS par Ubuntu, au premier démarrage de la VM.                  
+#  Installe Docker Engine depuis le dépôt officiel de Docker                          
+#  (même méthode que la documentation docs.docker.com).                               
+# =====================================================================               
+                                                                                      
+                                                                                      
+package_update: true                                                                  
+package_upgrade: true                                                                 
+                                                                                      
+                                                                                      
+packages:                                                                             
+  - ca-certificates                                                                   
+  - curl                                                                              
+                                                                                      
+                                                                                      
+write_files:                                                                          
+  # Rotation des logs des conteneurs : sinon le disque finit par se remplir           
+  - path: /etc/docker/daemon.json                                                     
+    permissions: "0644"                                                               
+    content: |                                                                        
+      {                                                                               
+        "log-driver": "json-file",                                                    
+        "log-opts": { "max-size": "10m", "max-file": "3" }                            
+      }                                                                               
+                                                                                      
+                                                                                      
+runcmd:                                                                               
+  # 1. Clé de signature officielle de Docker                                          
+  - install -m 0755 -d /etc/apt/keyrings                                              
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docke
+  - chmod a+r /etc/apt/keyrings/docker.asc                                            
+                                                                                      
+                                                                                      
+  # 2. Dépôt officiel de Docker                                                       
+  - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.as
+                                                                                      
+                                                                                      
+  # 3. Installation de Docker Engine + Docker Compose                                 
+  - apt-get update                                                                    
+  - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin dock
+                                                                                      
+                                                                                      
+  # 4. Démarrage automatique + droits pour l'utilisateur azureuser                    
+  - systemctl enable --now docker                                                     
+  - usermod -aG docker azureuser                                                      
+                                                                                      
+                                                                                      
+final_message: "Docker est installé. Durée : $UPTIME secondes."                       
+                                                                                      
+                                                                                      
