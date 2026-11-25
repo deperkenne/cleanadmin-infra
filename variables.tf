@@ -47,3 +47,11 @@ variable "my_ip" {
   }
 }
 
+variable "keycloack_image" {
+   type = string 
+}
+
+variable "postgres_image"{
+  type = string
+}
+
