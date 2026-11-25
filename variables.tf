@@ -55,3 +55,6 @@ variable "postgres_image"{
   type = string
 }
 
+variable "postgres-pass" {
+  type = string
+}
