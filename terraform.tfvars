@@ -4,10 +4,12 @@ env = "dev"
 # Votre IP publique : tapez "curl ifconfig.me" dans le terminal
 my_ip = "0.0.0.0"
 
-location = "eastus2"
+location = "swedencentral"
 
-keycloack_image = "quay.io/keycloak/keycloak:26.0"
+keycloak_image = "quay.io/keycloak/keycloak:26.0"
 
 postgres_image = "postgres:15-alpine"
 
-postgres-pass = "Keycloak"
+postgres_pass = "Keycloak"
+
+size = "Standard_D2s_v6"
