@@ -2,15 +2,13 @@
 locals {
    project_name = var.project
    vm_rg= azurerm_resource_group.this
-   vm_size = coalesce(var.size, var.env == "dev" ? "Standard_D4_v5" : "Standard_B2ms")
+   #vm_size = coalesce(var.size, var.env == "dev" ?"Standard_B2s_v2": "Standard_D4_v5")
+   vm_size  = var.size
    tags = {                 
            project = var.project
   
          }
 }                        
-
-
-
 
 # 2. Le réseau virtuel et son sous-réseau
 resource "azurerm_virtual_network" "this" {
@@ -44,7 +42,8 @@ resource "azurerm_network_security_group" "this" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = "${var.my_ip}/32"
+    #source_address_prefix      = "${var.my_ip}/32"
+    source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
 }
@@ -84,8 +83,10 @@ resource "azurerm_linux_virtual_machine" "this" {
       name = "vm-${local.project_name}"                    
       resource_group_name = azurerm_resource_group.this.name
       location = azurerm_resource_group.this.location       
-      size = "${local.vm_size}"                    
-      admin_username = "userkenne"                  
+      size = local.vm_size
+      disk_controller_type = "NVMe"                    
+      admin_username = "userkenne" 
+      custom_data = base64encode(file("${path.module}/cloud-init.yaml"))                 
                                                     
                                                     
       network_interface_ids = [                     
@@ -106,12 +107,17 @@ resource "azurerm_linux_virtual_machine" "this" {
   }                                                 
                                                     
                                                     
-  source_image_reference {                          
-    publisher = "Canonical"                         
-    offer     = "0001-com-ubuntu-server-jammy"      
-    sku       = "22_04-lts"                         
-    version   = "latest"                            
-  }                                                 
+       
+       
+  source_image_reference {
+   publisher = "Canonical"
+   offer     = "0001-com-ubuntu-server-jammy"
+   sku       = "22_04-lts-gen2"    # ← le "-gen2" à la fin est important
+   version   = "latest"
+}
+       
+       
+       
                                                     
 }    
 
