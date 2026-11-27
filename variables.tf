@@ -19,7 +19,7 @@ variable "location"{
     type =  string
     default = null
     validation {
-    condition     = contains(["germanywestcentral", "westeurope", "northeurope", "francecentral","eastus2"], var.location)
+    condition     = contains(["germanywestcentral", "westeurope", "northeurope","swedencentral" ], var.location)
     error_message = "Région non autorisée par l'entreprise."
   }
     
@@ -30,7 +30,7 @@ variable "size"{
    type = string
    default = null
    validation {
-      condition =  var.size== null ||contains (["Standard_D4_v5","Standard_B2ms"],var.size)
+      condition =  var.size== null ||contains (["Standard_D2s_v6","Standard_D2s_v7"],var.size)
       error_message = "size muss be Standar for dev env"
    }
 
@@ -47,7 +47,7 @@ variable "my_ip" {
   }
 }
 
-variable "keycloack_image" {
+variable "keycloak_image" {
    type = string 
 }
 
@@ -55,6 +55,6 @@ variable "postgres_image"{
   type = string
 }
 
-variable "postgres-pass" {
+variable "postgres_pass" {
   type = string
 }
